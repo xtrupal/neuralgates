@@ -42,3 +42,7 @@ python demo.py
 ```
 
 seeyaa :P
+
+## License
+
+MIT
