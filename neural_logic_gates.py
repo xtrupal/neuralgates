@@ -286,21 +286,58 @@ class NeuralGate:
             
         return metrics
     
-    def plot_training_history(self):
+    def plot_training_history(self, log_interval=1000, save_path=None):
         """
-        Plot the training history (cost over epochs).
+        Plot the training history (cost over epochs) with improved styling and annotations.
+        
+        Args:
+            log_interval (int): Interval at which epochs were logged during training.
+            save_path (str, optional): File path to save the plot (e.g., "xor_training_history.png").
         """
         if not self.training_history:
             print("No training history available.")
             return
-            
+        
+        # Create figure with adjusted size for clarity
         plt.figure(figsize=(10, 6))
-        plt.plot(range(0, len(self.training_history)), self.training_history)
-        plt.title(f"Training History ({self.gate_type if self.gate_type else 'Custom'} Gate)")
-        plt.xlabel("Logged Epochs")
-        plt.ylabel("Cost (MSE)")
-        plt.grid(True)
-        plt.yscale('log')
+        
+        # Calculate actual epoch numbers based on log_interval
+        epochs = [i * log_interval for i in range(len(self.training_history))]
+        
+        # Plot with thicker line and professional styling
+        plt.plot(epochs, self.training_history, color="#FF6200", linewidth=2, label=f"{self.gate_type or 'Custom'} Gate")
+        
+        # Add annotation for final cost
+        final_cost = self.training_history[-1]
+        final_epoch = epochs[-1]
+        plt.annotate(f"Final Cost: {final_cost:.6f}", 
+                    xy=(final_epoch, final_cost), 
+                    xytext=(final_epoch * 0.7, final_cost * 10), 
+                    arrowprops=dict(facecolor="black", shrink=0.05),
+                    fontsize=10, color="black")
+        
+        # Customize title and labels with larger fonts
+        plt.title(f"Training History for {self.gate_type or 'Custom'} Gate", fontsize=14, pad=10)
+        plt.xlabel("Epochs", fontsize=12)
+        plt.ylabel("Mean Squared Error (MSE)", fontsize=12)
+        
+        # Add light grid for better readability
+        plt.grid(True, linestyle="--", alpha=0.5)
+        
+        # Use log scale for y-axis
+        plt.yscale("log")
+        
+        # Add legend to clarify the plot
+        plt.legend(fontsize=10)
+        
+        # Adjust layout to prevent clipping
+        plt.tight_layout()
+        
+        # Save the plot if a path is provided
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        
+        # Show the plot
         plt.show()
     
     def get_parameters(self):
